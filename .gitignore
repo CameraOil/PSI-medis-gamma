@@ -1,0 +1,4 @@
+# env variables
+.env
+#ignore folder
+server_env
