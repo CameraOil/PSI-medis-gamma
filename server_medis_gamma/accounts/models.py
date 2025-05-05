@@ -8,7 +8,7 @@ class UserManager(BaseUserManager):
             raise ValueError("Email must be provided")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.make_password(password)
+        user.set_password(password)
         user.save()
         return user
 
