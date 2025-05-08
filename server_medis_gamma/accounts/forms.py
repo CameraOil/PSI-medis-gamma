@@ -47,4 +47,11 @@ class CustomUserChangeForm(UserChangeForm):
         # Note: 'password' field is handled separately by UserChangeForm via a "change password" link
 
 class EmailLoginForm(AuthenticationForm):
-    username = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={"autofocus": True}))
+    username = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={
+            "autofocus": True,
+            "placeholder": "example@email.com",
+            "class": "input-class"  # optional untuk styling
+        })
+    )

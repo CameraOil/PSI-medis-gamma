@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Data - Gamma Instruments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="data.css" />
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="logo"><strong>Gamma</strong> Instruments
+    </div>
+    <span class="subtitle">Medical Record System</span>
+  </header>
+
+  <!-- Ini flex-container horizontal -->
+  <main class="container">
+    
+    <!-- Kolom Kiri -->
+    <section class="left-column">
+      <div class="patient-info">
+        <h2>Fulan bin Faiq</h2>
+        <p>ID: 001-02</p>
+        <div class="action-buttons">
+          <button class="btn-red">Data Baru</button>
+          <button class="btn-blue">Edit Pasien</button>
+          <button class="btn-green">Unduh Data</button>
+        </div>
+      </div>
+
+      <!-- Identitas dibagi dua kolom -->
+      <div class="identity">
+        <div class="identity-item"><strong>Sex</strong><p>Laki-laki</p></div>
+        <div class="identity-item"><strong>Address</strong><p>Jl. Haji Toyib, Asrama Kesdam Barat, Kec. Kuta Alam, Kota Banda Aceh.</p></div>
+        <div class="identity-item"><strong>Birthday</strong><p>04/06/2005</p></div>
+        <div class="identity-item"><strong>Phone Number</strong><p>081959978950</p></div>
+      </div>
+
+      <!-- Riwayat Checkup -->
+      <div class="history">
+        <h2>History</h2>
+        <div class="history-item">
+          <div><strong>Checkup #4</strong><p>March 12, 2025</p></div>
+          <a href="#" class="history-action">View</a>
+        </div>
+        <div class="history-item">
+          <div><strong>Checkup #3</strong><p>March 9, 2025</p></div>
+          <a href="#" class="history-action">View</a>
+        </div>
+        <div class="history-item">
+          <div><strong>Checkup #2</strong><p>February 27, 2025</p></div>
+          <a href="#" class="history-action">View</a>
+        </div>
+        <div class="history-item">
+          <div><strong>Checkup #1</strong><p>February 12, 2025</p></div>
+          <a href="#" class="history-action">View</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kolom Kanan -->
+    <section class="right-column">
+      <div class="data-cards">
+        <div class="left-metrics">
+          <div class="row">
+            <div class="card weight">
+              <strong>Weight</strong>
+              <h2 class="purple">65</h2>
+              <span>kg</span>
+            </div>
+            <div class="card height">
+              <strong>Height</strong>
+              <h2 class="purple">1.67</h2>
+              <span>m</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="card bmi full-width">
+              <strong>Body Mass Index</strong>
+              <h2 class="purple">24.7</h2>
+              <span>kg/m²</span>
+            </div>
+          </div>
+        </div>
+        <div class="right-metrics">
+          <div class="card hydration full-width">
+            <strong>Hydration</strong>
+            <h2 class="teal">Dehidrasi</h2>
+            <p>Drink 2 liters of water immediately</p>
+          </div>
+          <div class="row">
+            <div class="card temperature">
+              <strong>Temperature</strong>
+              <h2 class="red">32.8</h2>
+              <span>°C</span>
+            </div>
+            <div class="card alcohol">
+              <strong>Alcohol</strong>
+              <h2 class="blue">250</h2>
+              <span>ppm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="chart">
+        <strong>BMI Chart (kg/m²)</strong>
+        <canvas id="bmiChart" width="755" height="210"></canvas>
+      </div>
+    </section>
+
+  </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('bmiChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+      datasets: [{
+        label: 'BMI (kg/m²)',
+        data: [22, 23.5, 25, 24.7, 26],
+        backgroundColor: 'rgba(164, 99, 242, 0.2)',
+        borderColor: '#a463f2',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#a463f2'
+      }]
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          title: {
+            display: true,
+            text: 'BMI (kg/m²)'
+          }
+        }
+      }
+    }
+  });
+</script>
+
+</html>

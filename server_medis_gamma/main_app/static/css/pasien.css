@@ -1,0 +1,221 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom right, #EFDDFF, #C7FEFB);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navbar {
+  width: 100%;
+  height: 100%;
+  padding: 1.2rem 2rem;
+  color: white;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+
+  background: linear-gradient(to right, #2cc2a0, #7f6edb); /* ← gradien horizontal */
+}
+
+.subtitle {
+  font-weight: 300;
+  display: inline-block;
+  flex: 1;
+}
+
+.btn_logout {
+  background-color: transparent; /* Membuat latar belakang tombol transparan */
+  border: 2px solid #fff; /* Menambahkan border */
+  color: #fff; /* Warna teks tombol */
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.btn_logout:hover {
+  background-color: #f1f1f1; /* Warna latar belakang saat hover */
+  border-color: #2196f3; /* Mengubah border saat hover */
+  color: #121212
+}
+
+.logo strong {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.content {
+  width: 100%;
+  max-width: 1000px;
+  margin: 1rem auto;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.content-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.search-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.search-actions input {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  min-width: 250px;
+}
+
+.btn-add {
+  background: white;
+  border: 1.5px solid #3ba0ff;
+  color: #3ba0ff;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-add:hover {
+  background: #e6f2ff;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+thead {
+  background: #2cc2a0;
+  color: white;
+}
+
+thead th.col-id {
+  background: #a463f2;
+}
+thead th.col-birthday {
+  background: #f26464;
+}
+thead th.col-action {
+  background: #2d9cdb;
+}
+
+thead th {
+  padding: 0.8rem;
+  text-align: left;
+}
+
+tbody tr {
+  background: white;
+  border-bottom: 1px solid #e0e0e0; /* garis pemisah antar baris */
+  border-right: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+}
+
+tbody tr:hover {
+  background: #F2DBFF;
+}
+
+tbody td {
+  padding: 0.8rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-view {
+  background: #f8f9fa;
+}
+
+.btn-edit {
+  background: #f8f9fa;
+}
+
+.btn-delete {
+  background: #ff6666;
+  color: white;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  justify-content: center; /* ← ini yang mengatur agar berada di tengah */
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  border: 1px solid #ccc;
+  background: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background: #3ba0ff;
+  color: white;
+  border: none;
+}
+
+.pagination select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.3rem;
+  border: 1px solid #ccc;
+}
+
+td.actions {
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center; /* Center horizontal */
+  gap: 0.5rem;
+}

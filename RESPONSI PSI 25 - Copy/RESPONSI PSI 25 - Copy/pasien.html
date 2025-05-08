@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patients List - Gamma Instruments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="pasien.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <strong>Gamma</strong> Instruments
+    </div>
+    <span class="subtitle">Medical Record System</span>
+  </header>
+
+  <main class="content">
+    <div class="content-header">
+      <h1>Patients List</h1>
+      <div class="search-actions">
+        <input type="text" placeholder="🔍 Enter Name or ID" />
+        <button class="btn-add">+ New Patient</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-name">Name</th>
+            <th class="col-id">ID</th>
+            <th class="col-birthday">Birthday</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample Rows -->
+          <tr>
+            <td>Fulan bin Faiq</td>
+            <td>001-02</td>
+            <td>06/08/1978</td>
+            <td class="actions">
+              <button class="btn-view">VIEW</button>
+              <button class="btn-edit">EDIT</button>
+              <button class="btn-delete">DELETE</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Teuku Muhammad Khalil Ziad Mudhaffar</td>
+            <td>003-23</td>
+            <td>09/03/1963</td>
+            <td class="actions">
+              <button class="btn-view">VIEW</button>
+              <button class="btn-edit">EDIT</button>
+              <button class="btn-delete">DELETE</button>
+            </td>
+          </tr>
+          <!-- Tambahkan baris lain sesuai kebutuhan -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button disabled>&lt;</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>&gt;</button>
+
+      <select>
+        <option>10</option>
+        <option>20</option>
+        <option>30</option>
+      </select>
+      <span>/Page</span>
+    </div>
+  </main>
+</body>
+</html>

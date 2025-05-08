@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Patient - Gamma Instruments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/new.css'%}" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo"><strong>Gamma</strong> Instruments</div>
+    <span class="subtitle">Medical Record System</span>
+  </header>
+
+  <main>
+    <h1>New Patient</h1>
+    <form class="form-card" method="post">
+      {% csrf_token %}
+      <div class="form-row">
+        <label>Full Name</label>
+        {{ form.name }}
+        <!-- <input type="text" placeholder="Patient Name" /> -->
+      </div>
+    
+      <div class="form-row">
+        <label>Sex</label>
+        <div class="radio-group">
+          {% for radio in form.kelamin %}
+            <label>
+              {{ radio.tag }} {{ radio.choice_label }}
+            </label>
+          {% endfor %}
+          <!-- <label><input type="radio" name="sex" checked />Male</label>
+          <label><input type="radio" name="sex" />Female</label> -->
+        </div>
+      </div>
+    
+      <div class="form-row">
+        <label>Birthday</label>
+        {{ form.tanggal_lahir }}
+        <!-- <input type="text" placeholder="MM/DD/YYYY" /> -->
+      </div>
+    
+      <div class="form-row">
+        <label>Phone Number</label>
+        {{ form.phone_number}}
+        <!-- <input type="text" placeholder="Example: 08XX XXXX XXXX" /> -->
+      </div>
+    
+      <div class="form-row">
+        <label>Address</label>
+        {{ form.alamat }}
+        <!-- <input type="text" placeholder="Example: 001-01" /> -->
+      </div>
+    
+      <div class="form-actions">
+        <button type="button" class="btn cancel" onclick="window.location.href='{% url 'index' %}'">Cancel</button>
+        <button type="submit" class="btn save" name="save_patient">Save</button>
+      </div>
+    </form>
+
+  </main>
+</body>
+</html>

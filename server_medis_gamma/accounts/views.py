@@ -16,3 +16,4 @@ class CustomObtainAuthToken(ObtainAuthToken):
 class StaffLoginView(LoginView):
     authentication_form = EmailLoginForm
     template_name = 'accounts/login.html'
+
