@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patients
+from .models import Patients, Nodes
 
 class PatientForm(forms.ModelForm):
     class Meta:
@@ -25,7 +25,12 @@ class PatientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Remove the empty "-----" choice
+        allowed_values = [0, 1]
         self.fields['kelamin'].choices = [
-            choice for choice in self.fields['kelamin'].choices if choice[0] != ''
+            choice for choice in self.fields['kelamin'].choices if choice[0] in allowed_values
         ]
 
+# class NodeForm(forms.ModelForm):
+#     class Meta:
+#         model = Nodes
+#         fields = ['status', 'tanggal_lahir', 'kelamin', 'phone_number', 'alamat']

@@ -40,7 +40,7 @@
           <tr>
             <th class="col-name">Name</th>
             <th class="col-id">ID</th>
-            <th class="col-birthday">Birthday</th>
+            <th class="col-birthday">Birthdate</th>
             <th class="col-action">Action</th>
           </tr>
         </thead>
@@ -60,7 +60,7 @@
               <!-- <a href="{% url 'patient' pasien.pk %}" class="btn-view">VIEW</a> -->
               <!-- <button class="btn-edit">EDIT</button> -->
               <form action="{% url 'edit' pasien.pk %}" method="get">
-                <button class="btn-edit" type="submit">EDIT</button>
+                <button class="btn-edit" type="submit" name="list_edit" value="index">EDIT</button>
               </form>
               <form action="{% url 'delete' pasien.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this account?')">
                 {% csrf_token %}

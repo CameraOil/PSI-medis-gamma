@@ -59,26 +59,43 @@ def busy_node_status(token):
         print("[ERROR] Failed to set status:", response.text)
 
 # === STEP 3: Send a fake reading ===
-def send_reading(token, patient_id):
+def send_reading(token, node_id):
     config = load_dynamic_config()
-    url = f"{SERVER}/api/readings/"
     headers = {"Authorization": f"Token {token}"}
+
+    # Step 1: Get latest unfilled reading for this node
+    get_url = f"{SERVER}/api/readings/latest/?node_id={node_id}"
+    get_response = requests.get(get_url, headers=headers)
+
+    if get_response.status_code != 200:
+        print("[ERROR] No reading to update:", get_response.text)
+        return False
+
+    reading_id = get_response.json()["id"]
+    patient_id = get_response.json()["patient"]
+    timestamp = get_response.json()["timestamp"]
+
+    # Step 2: Send PUT update
+    put_url = f"{SERVER}/api/readings/{reading_id}/"
     data = {
-        "timestamp": datetime.now().isoformat(),  # or datetime.now().isoformat() if not using UTC
-        "temperature" : config.get("temperature", 27),
+        "timestamp": timestamp ,
+        "temperature": config.get("temperature", 27),
         "alcohol": config.get("alcohol", 0.02),
         "urine": config.get("urine", 1),
         "berat": config.get("berat", 60),
         "tinggi": config.get("tinggi", 170),
-        "patient_id": patient_id
+        "patient_id": patient_id,
+        "node": node_id
     }
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code == 201:
-        print("[INFO] Reading sent.")
+
+    put_response = requests.put(put_url, json=data, headers=headers)
+    if put_response.status_code == 200:
+        print(f"[INFO] Updated reading {reading_id}.")
         return True
     else:
-        print("[ERROR] Failed to send reading:", response.text)
+        print("[ERROR] Failed to update reading:", put_response.text)
         return False
+
 
 # === STEP 4: Set node status back to idle ===
 def reset_node_status(token):
@@ -103,13 +120,12 @@ def main():
             break  # Something went wrong
 
         status = node_info.get("status")
-        patient_id = node_info.get("assigned_patient")
+        patient_id = node_info.get("assigned_patient") 
 
         if status == "assigned" and patient_id:
             busy_node_status(token)
-            time.sleep(10)
             print(f"[INFO] Assigned patient {patient_id}. Starting reading...")
-            success = send_reading(token, patient_id)
+            success = send_reading(token, NODE_ID)
             if success:
                 reset_node_status(token)
         else:

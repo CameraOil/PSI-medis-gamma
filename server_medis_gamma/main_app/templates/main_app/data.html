@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script> window.jsPDF = window.jspdf.jsPDF; </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Patient Data - Gamma Instruments</title>
@@ -14,7 +16,11 @@
   <header class="navbar">
     <div class="logo"><strong>Gamma</strong> Instruments
     </div>
-    <span class="subtitle">Medical Record System</span>
+    <span class="subtitle" onclick="window.location.href='{% url 'index' %}'">Medical Record System</span>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="btn_logout" type="submit">Log Out</button>
+    </form>
   </header>
 
   <!-- Ini flex-container horizontal -->
@@ -23,42 +29,69 @@
     <!-- Kolom Kiri -->
     <section class="left-column">
       <div class="patient-info">
-        <h2>Fulan bin Faiq</h2>
-        <p>ID: 001-02</p>
+        <h2>{{ pasien.name }}</h2>
+        <p>ID: {{ pasien.pk }}</p>
         <div class="action-buttons">
-          <button class="btn-red">Data Baru</button>
-          <button class="btn-blue">Edit Pasien</button>
-          <button class="btn-green">Unduh Data</button>
+          <button onclick="toggleAssignForm()" class="btn-red btn-danger">Data Baru</button>
+           <!-- Hidden Assign Form -->
+    <div id="assignFormContainer">
+      <h5>Assign Node</h5>
+      <form method="POST" action="{% url 'assign_node' %}">
+        {% csrf_token %}
+        <input type="hidden" name="_method" value="PUT">
+        <input type="hidden" name="patient_id" value="{{ pasien.pk}}">
+        {% for node in nodes %}
+          <div class="node-entry">
+            <div class="node-info">
+              <label>Node-{{ node.pk }}</label>
+              {% if node.status != 'available' %}
+                <p class="node-status">Status: {{ node.status }}</p>
+              {% endif %}
+            </div>
+            <button type="button"
+                    class="assign-btn {% if node.status == 'available' %}available{% endif %}"
+                    {% if node.status != 'available' %}disabled{% endif %}
+                    onclick="assignNode(this,{{ node.pk }})">
+              Assign
+            </button>
+            
+
+          </div>
+        {% endfor %}
+      </form>
+    </div>
+
+          <form action="{% url 'edit' pasien.pk %}" method="get">
+            <button class="btn-blue" type="submit" name="pasien_edit" value="data">Edit Data</button>
+          </form>
+          <button class="btn-green" id="downloadPDFBtn">Unduh Data</button>
         </div>
       </div>
 
       <!-- Identitas dibagi dua kolom -->
       <div class="identity">
-        <div class="identity-item"><strong>Sex</strong><p>Laki-laki</p></div>
-        <div class="identity-item"><strong>Address</strong><p>Jl. Haji Toyib, Asrama Kesdam Barat, Kec. Kuta Alam, Kota Banda Aceh.</p></div>
-        <div class="identity-item"><strong>Birthday</strong><p>04/06/2005</p></div>
-        <div class="identity-item"><strong>Phone Number</strong><p>081959978950</p></div>
+        <div class="identity-item"><strong>Sex</strong><p>{{ pasien.get_kelamin_display }}</p></div>
+        <div class="identity-item"><strong>Address</strong><p>{{ pasien.alamat }}</p></div>
+        <div class="identity-item"><strong>Birthdate</strong><p>{{ pasien.tanggal_lahir }}</p></div>
+        <div class="identity-item"><strong>Phone Number</strong><p>{{ pasien.phone_number }}</p></div>
       </div>
 
       <!-- Riwayat Checkup -->
       <div class="history">
         <h2>History</h2>
-        <div class="history-item">
-          <div><strong>Checkup #4</strong><p>March 12, 2025</p></div>
-          <a href="#" class="history-action">View</a>
-        </div>
-        <div class="history-item">
-          <div><strong>Checkup #3</strong><p>March 9, 2025</p></div>
-          <a href="#" class="history-action">View</a>
-        </div>
-        <div class="history-item">
-          <div><strong>Checkup #2</strong><p>February 27, 2025</p></div>
-          <a href="#" class="history-action">View</a>
-        </div>
-        <div class="history-item">
-          <div><strong>Checkup #1</strong><p>February 12, 2025</p></div>
-          <a href="#" class="history-action">View</a>
-        </div>
+          {% if data %}
+            {% for d in data%}
+            <div class="history-item">
+              <div><strong>Checkup #{{ forloop.revcounter }}</strong><p>{{d.timestamp}}</p></div>
+              <a href="#" class="history-action" data-reading-id="{{ d.id }}">View</a>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="history-item">
+              <div><p>No history</p></div>
+            </div>
+          {% endif %}
+
       </div>
     </section>
 
@@ -69,19 +102,19 @@
           <div class="row">
             <div class="card weight">
               <strong>Weight</strong>
-              <h2 class="purple">65</h2>
+              <h2 class="purple" font-size="12px">{{ data_baru.berat|default:"--"| floatformat:0 }}</h2>
               <span>kg</span>
             </div>
             <div class="card height">
               <strong>Height</strong>
-              <h2 class="purple">1.67</h2>
+              <h2 class="purple">{{ data_baru.tinggi|default:"--" }}</h2>
               <span>m</span>
             </div>
           </div>
           <div class="row">
             <div class="card bmi full-width">
               <strong>Body Mass Index</strong>
-              <h2 class="purple">24.7</h2>
+              <h2 class="purple">{{ data_baru.bmi|default:"--" }}</h2>
               <span>kg/m²</span>
             </div>
           </div>
@@ -89,18 +122,26 @@
         <div class="right-metrics">
           <div class="card hydration full-width">
             <strong>Hydration</strong>
-            <h2 class="teal">Dehidrasi</h2>
-            <p>Drink 2 liters of water immediately</p>
+            <h2 class="teal">{{ data_baru.get_urine_display|default:"--"}}</h2>
+            {% if data_baru.urine == 0 %}
+              <p>Drink 2 liters of water immediately</p>
+            {% elif data_baru.urine == 1 %}
+             <p>Don't forget to drink water</p>
+            {% elif data_baru.urine == 2 %}
+              <p>Maintain hydration by drink water consistently</p>
+            {% else %}
+              <p>None</p>
+            {% endif %}
           </div>
           <div class="row">
             <div class="card temperature">
               <strong>Temperature</strong>
-              <h2 class="red">32.8</h2>
+              <h2 class="red">{{ data_baru.temperature|default:"--" }}</h2>
               <span>°C</span>
             </div>
             <div class="card alcohol">
               <strong>Alcohol</strong>
-              <h2 class="blue">250</h2>
+              <h2 class="blue">{{ data_baru.alcohol|default:"--" }}</h2>
               <span>ppm</span>
             </div>
           </div>
@@ -112,19 +153,34 @@
         <canvas id="bmiChart" width="755" height="210"></canvas>
       </div>
     </section>
-
   </main>
 </body>
+<script>
+  function toggleAssignForm() {
+    const form = document.getElementById("assignFormContainer");
+    form.style.display = form.style.display === "none" ? "block" : "none";
+  }
+</script>
+
+
+
+<script>
+  const bmiChartData = {
+    labels: {{ labels|safe }},
+    data: {{ bmi_values|safe }}
+  };
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const ctx = document.getElementById('bmiChart').getContext('2d');
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+      labels: bmiChartData.labels,
       datasets: [{
         label: 'BMI (kg/m²)',
-        data: [22, 23.5, 25, 24.7, 26],
+        data: bmiChartData.data,
         backgroundColor: 'rgba(164, 99, 242, 0.2)',
         borderColor: '#a463f2',
         borderWidth: 2,
@@ -151,5 +207,347 @@
     }
   });
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const viewLinks = document.querySelectorAll('.history-action');
+
+    viewLinks.forEach(link => {
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        const readingId = this.getAttribute('data-reading-id');
+
+        fetch(`/api/reading/${readingId}/`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const d = data.data;
+              document.querySelector('.card.weight h2').textContent = d.berat ?? '--';
+              document.querySelector('.card.height h2').textContent = d.tinggi ?? '--';
+              document.querySelector('.card.bmi h2').textContent = d.bmi ?? '--';
+              document.querySelector('.card.temperature h2').textContent = d.temperature ?? '--';
+              document.querySelector('.card.alcohol h2').textContent = d.alcohol ?? '--';
+              document.querySelector('.card.hydration h2').textContent = d.urine_display ?? '--';
+
+              // Hydration message
+              const hydrationP = document.querySelector('.card.hydration p');
+              if (d.urine === 0) {
+                hydrationP.textContent = 'Drink 2 liters of water immediately';
+              } else if (d.urine === 1) {
+                hydrationP.textContent = "Don't forget to drink water";
+              } else if (d.urine === 2) {
+                hydrationP.textContent = 'Maintain hydration by drink water consistently';
+              } else {
+                hydrationP.textContent = 'None';
+              }
+            } else {
+              alert('Failed to load reading.');
+            }
+          });
+      });
+    });
+  });
+</script>
+
+<script>
+  // Pastikan jsPDF sudah dimuat
+  document.addEventListener('DOMContentLoaded', function() {
+    const downloadBtn = document.getElementById('downloadPDFBtn');
+    downloadBtn.addEventListener('click', generatePDF);
+
+    function generatePDF() {
+        const doc = new jsPDF();
+
+        // Membuat canvas untuk gradasi
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Tentukan ukuran canvas
+        canvas.width = 210;  // Ukuran A4 (210mm)
+        canvas.height = 20;  // Tinggi header
+
+        // Buat linear gradient pada canvas
+        const gradient = ctx.createLinearGradient(0, 0, 210, 0);
+        gradient.addColorStop(0, 'rgb(26, 188, 156)'); // Hijau
+        gradient.addColorStop(1, 'rgb(149, 97, 226)'); // Ungu
+
+        // Terapkan gradasi sebagai background canvas
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Konversi canvas ke gambar (data URL)
+        const imgData = canvas.toDataURL('image/png');
+
+        // Tambahkan gambar ke PDF
+        doc.addImage(imgData, 'PNG', 0, 0, 210, 20);
+
+        // Judul dan isi dokumen
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold')
+        doc.text('Gamma Instruments', 10, 9);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal')
+        doc.text('Medical Record System', 10, 14);
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(28);
+        doc.setFont('helvetica', 'bold')
+        doc.text('Patient Record', 105, 45, { align: 'center' });
+
+        // Garis pemisah
+        doc.setDrawColor(200, 200, 200);
+        doc.line(20, 55, 190, 55);
+
+        // Informasi dasar pasien
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold')
+        doc.text('Name:', 20, 70);
+        doc.setFont('helvetica', 'normal')
+        doc.text('{{pasien.name}}', 80, 70);
+        
+        doc.setFont('helvetica', 'bold')
+        doc.text('ID:', 20, 80);
+        doc.setFont('helvetica', 'normal')
+        doc.text(String({{ pasien.pk }}), 80, 80);
+        
+        doc.setFont('helvetica', 'bold')
+        doc.text('Date of Birth:', 20, 90);
+        doc.setFont('helvetica', 'normal')
+        doc.text('{{pasien.tanggal_lahir}}', 80, 90);
+        
+        doc.setFont('helvetica', 'bold')
+        doc.text('Sex:', 20, 100);
+        doc.setFont('helvetica', 'normal')
+        doc.text('{{pasien.get_kelamin_display}}', 80, 100);
+        
+        doc.setFont('helvetica', 'bold')
+        doc.text('Contact:', 20, 110);
+        doc.setFont('helvetica', 'normal')
+        doc.text('{{ pasien.phone_number }}', 80, 110);
+
+        // Garis pemisah
+        doc.line(20, 125, 190, 125);
+
+        // Pengukuran vital
+        // Weight
+        doc.setFont('helvetica', 'bold')
+        doc.text('Weight', 20, 140);
+        doc.setTextColor(149, 97, 226); // Warna ungu
+        doc.setFontSize(64);
+        doc.text(document.querySelector('.card.weight h2').textContent, 20, 162.5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal')
+        doc.text('kg', 20, 172);
+
+        // Height
+        doc.setFont('helvetica', 'bold')
+        doc.text('Height', 80, 140);
+        doc.setTextColor(149, 97, 226); // Warna ungu
+        doc.setFontSize(64);
+        doc.text(document.querySelector('.card.height h2').textContent, 80, 162.5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal')
+        doc.text('m', 80, 172);
+
+        // BMI
+        doc.setFont('helvetica', 'bold')
+        doc.text('BMI', 140, 140);
+        doc.setTextColor(149, 97, 226); // Warna ungu
+        doc.setFontSize(64);
+        doc.text(document.querySelector('.card.bmi h2').textContent, 140, 162.5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal')
+        doc.text('kg/m2', 140, 172);
+
+        // Temperature
+        doc.setFont('helvetica', 'bold')
+        doc.text('Temperature', 20, 187);
+        doc.setTextColor(231, 76, 60); // Warna merah
+        doc.setFontSize(64);
+        doc.text(document.querySelector('.card.temperature h2').textContent, 20, 209.5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal')
+        doc.text('°C', 20, 219);
+
+        // Alcohol
+        doc.setFont('helvetica', 'bold')
+        doc.text('Alcohol', 80, 187);
+        doc.setTextColor(52, 152, 219); // Warna biru
+        doc.setFontSize(64);
+        doc.text(document.querySelector('.card.alcohol h2').textContent, 80, 209.5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal')
+        doc.text('ppm', 80, 219);
+
+        // Garis pemisah
+        doc.line(20, 234, 190, 234);
+
+        // Hydration
+        doc.setFont('helvetica', 'bold')
+        doc.text('Hydration:', 20, 249);
+        doc.setFont('helvetica', 'normal')
+        doc.text('The patient is '+document.querySelector('.card.hydration h2').textContent+'. The patient is advised to', 20, 259);
+        doc.text(document.querySelector('.card.hydration p').textContent, 20, 269);
+
+        // Simpan PDF dengan nama file yang sesuai
+        doc.save(`rekam-medis-${String({{ pasien.pk }})}-{{ pasien.name }}.pdf`);
+    }
+});
+
+</script>
+<script>
+  let once = null;
+  let assignButton = null;
+  let nodeId = null;
+  let lastReadingId = null;
+  let pollingInterval = null;
+  const token = "{{ user.auth_token.key }}";
+
+  async function assignNode(button, id) {
+    try {
+      console.log("Assigning node:", id);
+      
+      const response = await fetch("{% url 'assign_node' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: new URLSearchParams({
+          "_method": "PUT",
+          "node_id": id,
+          "patient_id": "{{ pasien.pk }}",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to assign node");
+
+      console.log("Node assigned successfully");
+
+      // Set state and start polling
+      nodeId = id;
+      lastReadingId = null;
+      once = 0;
+      assignButton = button;
+
+
+      button.disabled = true;
+      button.classList.remove('available');
+      button.textContent = 'Assigning...';
+      fetchLatestReading();
+
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(fetchLatestReading, 5000);
+      
+    } catch (err) {
+      console.error("Assignment failed:", err);
+    }
+  }
+
+
+  // Delay helper function
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  async function fetchLatestReading() {
+    if (!nodeId) return;
+
+    try {
+      const response = await fetch(`/api/readings/latest/?node_id=${nodeId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Token ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+
+      const latest_data = await response.json();
+      console.log("Latest reading from API:", latest_data);  // ADD THIS
+
+      if (latest_data.id !== lastReadingId) {
+        const detailResponse = await fetch(`/api/readings/${latest_data.id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Token ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await detailResponse.json();
+
+        // Only update the DOM and lastReadingId if the data is complete (or non-null)
+        const isValid =
+          data.berat !== null || data.tinggi !== null || data.bmi !== null ||
+          data.temperature !== null || data.alcohol !== null || data.urine !== null;
+
+        if (isValid) {
+          lastReadingId = latest_data.id;
+
+          console.log("Valid data received:", data);
+          document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
+          document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
+          document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
+          document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
+          document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
+          document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
+
+          const hydrationP = document.querySelector('.card.hydration p');
+          if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
+          else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
+          else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
+          else hydrationP.textContent = 'None';
+
+          if (assignButton){
+            window.location.reload();
+          }
+
+        } else if ( once <= 6){
+          once += 1;
+          document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
+          document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
+          document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
+          document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
+          document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
+          document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
+
+          const hydrationP = document.querySelector('.card.hydration p');
+          if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
+          else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
+          else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
+          else hydrationP.textContent = 'None';
+        } else {
+          console.log("Data not yet valid. Will try again on next poll.");
+        }
+      }
+
+    } catch (err) {
+      console.log("No new reading yet. Last ID:", lastReadingId);
+      console.error("Error fetching latest reading:", err);
+    }
+  }
+
+  // Safe async polling loop
+  async function startPolling(interval = 5000) {
+    while (true) {
+      if (nodeId) {
+        await fetchLatestReading();
+      }
+      await delay(interval);
+    }
+  }
+
+  // Start polling when the script runs
+  startPolling();
+</script>
+
+
+
+
 
 </html>

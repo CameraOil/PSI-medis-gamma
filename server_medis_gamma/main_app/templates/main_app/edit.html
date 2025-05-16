@@ -16,38 +16,48 @@
 
   <main>
     <h1>Edit Patient</h1>
-    <form class="form-card">
+    <form class="form-card" method="post">
+      {% csrf_token %}
       <div class="form-row">
         <label>Full Name</label>
-        <input type="text" placeholder="Patient Name" />
+        {{ form.name }}
+        <!-- <input type="text" placeholder="Patient Name" /> -->
       </div>
     
       <div class="form-row">
         <label>Sex</label>
         <div class="radio-group">
-          <label><input type="radio" name="sex" checked />Male</label>
-          <label><input type="radio" name="sex" />Female</label>
+          {% for radio in form.kelamin %}
+            <label>
+              {{ radio.tag }} {{ radio.choice_label }}
+            </label>
+          {% endfor %}
+          <!-- <label><input type="radio" name="sex" checked />Male</label>
+          <label><input type="radio" name="sex" />Female</label> -->
         </div>
       </div>
     
       <div class="form-row">
         <label>Birthday</label>
-        <input type="text" placeholder="MM/DD/YYYY" />
+        {{ form.tanggal_lahir }}
+        <!-- <input type="text" placeholder="MM/DD/YYYY" /> -->
       </div>
     
       <div class="form-row">
         <label>Phone Number</label>
-        <input type="text" placeholder="Example: 08XX XXXX XXXX" />
+        {{ form.phone_number}}
+        <!-- <input type="text" placeholder="Example: 08XX XXXX XXXX" /> -->
       </div>
     
       <div class="form-row">
-        <label>ID</label>
-        <input type="text" placeholder="Example: 001-01" />
+        <label>Address</label>
+        {{ form.alamat }}
+        <!-- <input type="text" placeholder="Example: 001-01" /> -->
       </div>
     
       <div class="form-actions">
-        <button type="button" class="btn cancel">Cancel</button>
-        <button type="submit" class="btn save">Save</button>
+        <button type="button" class="btn cancel" onclick="window.history.back()">Cancel</button>
+        <button type="submit" class="btn save" name="save_patient">Save</button>
       </div>
     </form>
 

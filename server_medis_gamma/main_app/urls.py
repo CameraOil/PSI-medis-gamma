@@ -8,5 +8,7 @@ urlpatterns = [
     path('pasien/<int:pk>/', views.patient_view, name='patient'),
     path('pasien/edit/<int:pk>/', views.edit_view, name='edit'),
     path('pasien/delete/<int:patient_id>/', views.delete_patient, name='delete'),
-    path('pasien/new', views.neu_patient, name='new')
+    path('pasien/new/', views.neu_patient, name='new'),
+    path('api/reading/<int:reading_id>/', views.get_reading_detail, name='get-reading-detail'),
+    path('assign_node/', views.assign_node_view, name='assign_node'),
 ]

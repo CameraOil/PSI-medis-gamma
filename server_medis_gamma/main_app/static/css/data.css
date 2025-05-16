@@ -33,9 +33,27 @@ body {
 }
 
 .subtitle {
+  cursor: pointer;
   font-weight: 400;
   font-size: 1rem;
   opacity: 0.9;
+}
+
+.btn_logout {
+  background-color: transparent; /* Membuat latar belakang tombol transparan */
+  border: 2px solid #fff; /* Menambahkan border */
+  color: #fff; /* Warna teks tombol */
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.btn_logout:hover {
+  background-color: #f1f1f1; /* Warna latar belakang saat hover */
+  border-color: #2196f3; /* Mengubah border saat hover */
+  color: #121212
 }
 
 .container {
@@ -300,3 +318,57 @@ body {
 .teal { color: #2cc2a0; }
 .red { color: #f26464; }
 .blue { color: #3b9cff; }
+
+
+
+#assignFormContainer {
+  display: none;
+  margin-top: 1em;
+  padding: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: fit-content;
+  max-width: 600px;
+  font-family: Arial, sans-serif;
+}
+
+.node-entry {
+  margin-bottom: 1em;
+  padding: 0.8em;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.node-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.node-status {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.assign-btn {
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.assign-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.assign-btn.available {
+  background-color: #28a745;
+  color: white;
+}

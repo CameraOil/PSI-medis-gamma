@@ -35,23 +35,6 @@ class Patients(models.Model):
     def __str__(self):
         return f"{self.patient_id}: {self.name}"
     
-class Readings(models.Model):
-    DEHIDRASI = [
-        (0, 'Dehidrasi'),
-        (1, 'Cukup'),
-        (2, 'Baik')
-    ]
-    timestamp = models.DateTimeField()
-    patient_id = models.ForeignKey(Patients, on_delete=models.CASCADE, related_name="readings")
-    temperature = models.FloatField()
-    alcohol = models.FloatField()
-    urine = models.PositiveSmallIntegerField(choices=DEHIDRASI)
-    berat = models.FloatField()
-    tinggi = models.FloatField()
-
-    def __str__(self):
-        return f"{self.timestamp}: {self.patient_id}"
-
 class Nodes(models.Model):
     STATUS_CHOICES = [
         ('available', 'Available'),
@@ -71,3 +54,31 @@ class Nodes(models.Model):
 
     def __str__(self):
          return f"Node {self.pk} ({self.status})" # Gunakan self.pk untuk primary key
+
+class Readings(models.Model):
+    DEHIDRASI = [
+        (0, 'Dehydrated'),
+        (1, 'Enough'),
+        (2, 'Well')
+    ]
+    timestamp = models.DateTimeField()
+
+    patient_id = models.ForeignKey(Patients, on_delete=models.CASCADE, related_name="readings")
+    node = models.ForeignKey(Nodes, on_delete=models.CASCADE)
+    
+    temperature = models.FloatField(null=True, blank=True)
+    alcohol = models.FloatField(null=True, blank=True)
+    urine = models.PositiveSmallIntegerField(choices=DEHIDRASI, null=True, blank=True)
+    berat = models.FloatField(null=True, blank=True)
+    tinggi = models.FloatField(null=True, blank=True)
+    bmi = models.FloatField(null=True, blank=True)  # new field for BMI
+
+    def __str__(self):
+        return f"{self.timestamp}: {self.patient_id}"
+    
+    def save(self, *args, **kwargs):
+        if self.tinggi and self.berat:
+            self.tinggi= self.tinggi / 100  # convert cm to meters
+            if self.tinggi > 0:
+                self.bmi = round(self.berat / (self.tinggi ** 2), 2)
+        super().save(*args, **kwargs)
