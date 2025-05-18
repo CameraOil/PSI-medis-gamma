@@ -2,3 +2,4 @@
 .env
 #ignore folder
 server_env
+node

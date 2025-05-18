@@ -401,6 +401,11 @@
 
 </script>
 <script>
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+</script>
+<script>
   let once = null;
   let assignButton = null;
   let nodeId = null;
@@ -453,11 +458,24 @@
   // Delay helper function
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  async function fetchLatestReading() {
-    if (!nodeId) return;
+async function fetchLatestReading() {
+  if (!nodeId) return;
 
-    try {
-      const response = await fetch(`/api/readings/latest/?node_id=${nodeId}`, {
+  try {
+    const response = await fetch(`/api/readings/latest/?node_id=${nodeId}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Token ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+
+    const latest_data = await response.json();
+
+    if (latest_data.id !== lastReadingId) {
+      const detailResponse = await fetch(`/api/readings/${latest_data.id}`, {
         method: "GET",
         headers: {
           "Authorization": `Token ${token}`,
@@ -465,72 +483,70 @@
         }
       });
 
-      if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+      const data = await detailResponse.json();
 
-      const latest_data = await response.json();
-      console.log("Latest reading from API:", latest_data);  // ADD THIS
-
-      if (latest_data.id !== lastReadingId) {
-        const detailResponse = await fetch(`/api/readings/${latest_data.id}`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Token ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
-
-        const data = await detailResponse.json();
-
-        // Only update the DOM and lastReadingId if the data is complete (or non-null)
-        const isValid =
-          data.berat !== null || data.tinggi !== null || data.bmi !== null ||
-          data.temperature !== null || data.alcohol !== null || data.urine !== null;
-
-        if (isValid) {
-          lastReadingId = latest_data.id;
-
-          console.log("Valid data received:", data);
-          document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
-          document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
-          document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
-          document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
-          document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
-          document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
-
-          const hydrationP = document.querySelector('.card.hydration p');
-          if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
-          else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
-          else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
-          else hydrationP.textContent = 'None';
-
-          if (assignButton){
-            window.location.reload();
-          }
-
-        } else if ( once <= 6){
-          once += 1;
-          document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
-          document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
-          document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
-          document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
-          document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
-          document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
-
-          const hydrationP = document.querySelector('.card.hydration p');
-          if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
-          else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
-          else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
-          else hydrationP.textContent = 'None';
-        } else {
-          console.log("Data not yet valid. Will try again on next poll.");
-        }
+      // Update each field one by one with delay
+      if (data.berat !== null) {
+        document.querySelector('.card.weight h2').textContent = data.berat;
+        await sleep(1000);
       }
 
-    } catch (err) {
-      console.log("No new reading yet. Last ID:", lastReadingId);
-      console.error("Error fetching latest reading:", err);
+      if (data.tinggi !== null) {
+        document.querySelector('.card.height h2').textContent = data.tinggi;
+        await sleep(1000);
+      }
+
+      if (data.bmi !== null) {
+        document.querySelector('.card.bmi h2').textContent = data.bmi;
+        await sleep(1000);
+      }
+
+      if (data.temperature !== null) {
+        document.querySelector('.card.temperature h2').textContent = data.temperature;
+        await sleep(1000);
+      }
+
+      if (data.alcohol !== null) {
+        document.querySelector('.card.alcohol h2').textContent = data.alcohol;
+        await sleep(1000);
+      }
+
+      if (data.urine !== null || data.urine_display !== null) {
+        document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
+
+        const hydrationP = document.querySelector('.card.hydration p');
+        if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
+        else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
+        else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
+        else hydrationP.textContent = 'None';
+
+        await sleep(1000);
+      }
+
+      // Check if all are filled
+      const isComplete = data.berat !== null && data.tinggi !== null && data.bmi !== null &&
+                         data.temperature !== null && data.alcohol !== null && data.urine !== null;
+
+      if (isComplete) {
+        lastReadingId = latest_data.id;
+
+        if (assignButton){
+          assignButton.disabled = false;
+          assignButton.classList.add('available');
+          assignButton.textContent = "Reassign";
+          window.location.reload();
+        }
+
+        clearInterval(pollingInterval);  // Stop polling if all data complete
+      }
+
     }
+
+  } catch (err) {
+    console.log("Error:", err);
   }
+}
+
 
   // Safe async polling loop
   async function startPolling(interval = 5000) {
