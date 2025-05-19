@@ -1,0 +1,374 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom right, #EFDDFF, #C7FEFB);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navbar {
+  width: 100%;
+  height: 100%;
+  padding: 1.2rem 2rem;
+  color: white;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+
+  background: linear-gradient(to right, #2cc2a0, #7f6edb); /* ← gradien horizontal */
+}
+
+.logo strong {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.btn_logout {
+  background-color: transparent; /* Membuat latar belakang tombol transparan */
+  border: 2px solid #fff; /* Menambahkan border */
+  color: #fff; /* Warna teks tombol */
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.btn_logout:hover {
+  background-color: #f1f1f1; /* Warna latar belakang saat hover */
+  border-color: #2196f3; /* Mengubah border saat hover */
+  color: #121212
+}
+
+.container {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 450px; /* sebelumnya 300px → ganti ini jadi lebih lebar */
+  flex: 0 0 400px;    /* agar ukuran tidak ditimpa grid fleksibel */
+}
+
+.patient-info h2 {
+  font-size: 1.6rem;
+}
+
+.patient-info p {
+  margin-bottom: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-red, .btn-blue, .btn-green {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: 127px
+}
+
+.btn-red { background-color: #f26464; }
+.btn-blue { background-color: #6ca0ff; }
+.btn-green { background-color: #25b99a; }
+
+.identity {
+  background: white;
+  padding: 1rem 1.5rem;  /* padding kanan-kiri diperluas */
+  border-radius: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* ← 2 kolom */
+  gap: 1.5rem 2rem;  /* baris x kolom */
+  font-size: 0.75rem;
+  width: 400px; /* agar sejajar dgn tombol */
+}
+
+.history {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  width: 400px;        /* <- lebar disamakan dan fix */
+  box-sizing: border-box;
+}
+
+.history h3 {
+  margin-bottom: 0.8rem;
+}
+
+.history h2 {
+  margin-bottom: 1rem;
+}
+
+.history ul {
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.history li {
+  margin-bottom: 0.7rem;
+}
+
+.history span {
+  display: block;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.history a {
+  font-size: 0.85rem;
+  color: #4c73ff;
+  text-decoration: none;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+  gap: 1rem;  /* tambahkan spasi antar kolom */
+}
+
+.history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-info strong {
+  font-size: 1rem;
+}
+
+.history-info p {
+  margin: 0.2rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.history-action {
+  color: #4c73ff;
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0; /* agar tidak mengecil saat ruang sempit */
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.data-cards {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  width: 100%
+}
+
+.left-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 257px;
+}
+
+.right-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 516px;
+}
+
+.left-metrics .row,
+.right-metrics .row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+  flex: 1;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%; /* Biar BMI dan Hydration bisa ambil dua kolom */
+}
+
+.hydration.full-width {
+  text-align: left;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* total 4 unit */
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+/* Default card */
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Spanning rules */
+.weight,
+.height {
+  grid-column: span 1;
+}
+
+.hydration {
+  grid-column: span 2;
+}
+
+.bmi,
+.temperature,
+.alcohol {
+  grid-column: span 1;
+}
+
+.card.weight { grid-area: weight; }
+.card.height { grid-area: height; }
+.card.bmi { grid-area: bmi; }
+.card.hydration { grid-area: hydration; }
+.card.temperature { grid-area: temperature; }
+.card.alcohol { grid-area: alcohol; }
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+.card h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0.4rem 0;
+}
+
+.card span {
+  font-size: 0.85rem;
+}
+
+.hydration p {
+  font-size: 0.85rem;
+  color: #222;
+}
+
+.chart {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 788px;
+}
+
+.chart canvas {
+  width: 100%;
+  height: 150px;
+}
+
+.chart img {
+  width: 750px;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+}
+
+.purple { color: #a463f2; }
+.teal { color: #2cc2a0; }
+.red { color: #f26464; }
+.blue { color: #3b9cff; }
+
+
+
+#assignFormContainer {
+  display: none;
+  margin-top: 1em;
+  padding: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: fit-content;
+  max-width: 600px;
+  font-family: Arial, sans-serif;
+}
+
+.node-entry {
+  margin-bottom: 1em;
+  padding: 0.8em;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.node-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.node-status {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.assign-btn {
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.assign-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.assign-btn.available {
+  background-color: #28a745;
+  color: white;
+}

@@ -32,7 +32,7 @@
         <h2>{{ pasien.name }}</h2>
         <p>ID: {{ pasien.pk }}</p>
         <div class="action-buttons">
-          <button onclick="toggleAssignForm()" class="btn-red btn-danger">Data Baru</button>
+          <button onclick="toggleAssignForm()" class="btn-red btn-danger">New Reading</button>
            <!-- Hidden Assign Form -->
     <div id="assignFormContainer">
       <h5>Assign Node</h5>
@@ -64,7 +64,7 @@
           <form action="{% url 'edit' pasien.pk %}" method="get">
             <button class="btn-blue" type="submit" name="pasien_edit" value="data">Edit Data</button>
           </form>
-          <button class="btn-green" id="downloadPDFBtn">Unduh Data</button>
+          <button class="btn-green" id="downloadPDFBtn">Download Data</button>
         </div>
       </div>
 
@@ -533,7 +533,7 @@ async function fetchLatestReading() {
         if (assignButton){
           assignButton.disabled = false;
           assignButton.classList.add('available');
-          assignButton.textContent = "Reassign";
+          assignButton.textContent = "Assign";
           window.location.reload();
         }
 
