@@ -437,7 +437,6 @@
       // Set state and start polling
       nodeId = id;
       lastReadingId = null;
-      once = 0;
       assignButton = button;
 
 
@@ -487,28 +486,28 @@ async function fetchLatestReading() {
 
       // Update each field one by one with delay
       if (data.berat !== null) {
-        document.querySelector('.card.weight h2').textContent = data.berat;
-        await sleep(1000);
+        document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
+        // await sleep(1000);
       }
 
       if (data.tinggi !== null) {
-        document.querySelector('.card.height h2').textContent = data.tinggi;
-        await sleep(1000);
+        document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
+        // await sleep(1000);
       }
 
       if (data.bmi !== null) {
-        document.querySelector('.card.bmi h2').textContent = data.bmi;
-        await sleep(1000);
+        document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
+        // await sleep(1000);
       }
 
       if (data.temperature !== null) {
-        document.querySelector('.card.temperature h2').textContent = data.temperature;
-        await sleep(1000);
+        document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
+        // await sleep(1000);
       }
 
       if (data.alcohol !== null) {
-        document.querySelector('.card.alcohol h2').textContent = data.alcohol;
-        await sleep(1000);
+        document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
+        // await sleep(1000);
       }
 
       if (data.urine !== null || data.urine_display !== null) {
@@ -520,7 +519,8 @@ async function fetchLatestReading() {
         else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
         else hydrationP.textContent = 'None';
 
-        await sleep(1000);
+        // await sleep(1000);
+        
       }
 
       // Check if all are filled
@@ -534,10 +534,25 @@ async function fetchLatestReading() {
           assignButton.disabled = false;
           assignButton.classList.add('available');
           assignButton.textContent = "Assign";
+          await sleep(5000);
           window.location.reload();
         }
 
         clearInterval(pollingInterval);  // Stop polling if all data complete
+      } else if (!isComplete){
+        document.querySelector('.card.weight h2').textContent = data.berat ?? '--';
+        document.querySelector('.card.height h2').textContent = data.tinggi ?? '--';
+        document.querySelector('.card.bmi h2').textContent = data.bmi ?? '--';
+        document.querySelector('.card.temperature h2').textContent = data.temperature ?? '--';
+        document.querySelector('.card.alcohol h2').textContent = data.alcohol ?? '--';
+        document.querySelector('.card.hydration h2').textContent = data.urine_display ?? '--';
+
+        const hydrationP = document.querySelector('.card.hydration p');
+        if (data.urine === 0) hydrationP.textContent = 'Drink 2 liters of water immediately';
+        else if (data.urine === 1) hydrationP.textContent = "Don't forget to drink water";
+        else if (data.urine === 2) hydrationP.textContent = 'Maintain hydration by drinking consistently';
+        else hydrationP.textContent = 'None';
+
       }
 
     }
@@ -547,12 +562,36 @@ async function fetchLatestReading() {
   }
 }
 
+let lastNodeStatus = "available"; // Track previous status to avoid repeat alerts
+
+async function checkNodeStatus(nodeId) {
+  const response = await fetch(`/api/nodes/${nodeId}/`, {
+    headers: {
+      "Authorization": `Token ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) return;
+
+  const node = await response.json();
+
+  if (node.status === "error" && lastNodeStatus !== "error") {
+    alert(`⚠️ Node Error: ${node.error_message}`);
+    lastNodeStatus = "error";
+  } else if (node.status === "available") {
+    lastNodeStatus = "available";
+  }
+}
+
+
 
   // Safe async polling loop
   async function startPolling(interval = 5000) {
     while (true) {
       if (nodeId) {
         await fetchLatestReading();
+        checkNodeStatus(nodeId);
       }
       await delay(interval);
     }

@@ -50,7 +50,7 @@ class Nodes(models.Model):
     # Tambahkan field untuk melacak waktu penugasan
     assigned_at = models.DateTimeField(null=True, blank=True)
     user = models.OneToOneField('accounts.User', on_delete=models.CASCADE)  # Node uses this user account
-    
+    error_message = models.TextField(null=True, blank=True)
 
     def __str__(self):
          return f"Node {self.pk} ({self.status})" # Gunakan self.pk untuk primary key

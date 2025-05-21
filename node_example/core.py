@@ -59,7 +59,7 @@ def busy_node_status(token):
         print("[ERROR] Failed to set status:", response.text)
 
 # === STEP 3: Send a fake reading ===
-def send_reading(token, node_id):
+def send_reading(token, node_id, dict):
     config = load_dynamic_config()
     headers = {"Authorization": f"Token {token}"}
 
@@ -77,16 +77,19 @@ def send_reading(token, node_id):
 
     # Step 2: Send PUT update
     put_url = f"{SERVER}/api/readings/{reading_id}/"
-    data = {
-        "timestamp": timestamp ,
-        "temperature": config.get("temperature", 27),
-        "alcohol": config.get("alcohol", 0.02),
-        "urine": config.get("urine", 1),
-        "berat": config.get("berat", 60),
-        "tinggi": config.get("tinggi", 170),
-        "patient_id": patient_id,
-        "node": node_id
-    }
+    if dict:
+        data = dict
+    else:
+        data = {
+            "timestamp": timestamp ,
+            "temperature": config.get("temperature", 27),
+            "alcohol": config.get("alcohol", 0.02),
+            "urine": config.get("urine", 1),
+            "berat": config.get("berat", 60),
+            "tinggi": config.get("tinggi", 170),
+            "patient_id": patient_id,
+            "node": node_id
+        }
 
     put_response = requests.put(put_url, json=data, headers=headers)
     if put_response.status_code == 200:
@@ -123,9 +126,18 @@ def main():
         patient_id = node_info.get("assigned_patient") 
 
         if status == "assigned" and patient_id:
+            send_reading(token, NODE_ID, dict= {
+            "temperature": None,
+            "alcohol": None,
+            "urine": None,
+            "berat": None,
+            "tinggi": None,
+            "patient_id": patient_id,
+            "node": NODE_ID
+        })
             busy_node_status(token)
             print(f"[INFO] Assigned patient {patient_id}. Starting reading...")
-            success = send_reading(token, NODE_ID)
+            success = send_reading(token, NODE_ID, dict=False)
             if success:
                 reset_node_status(token)
         else:
