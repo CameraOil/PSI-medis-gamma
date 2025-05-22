@@ -12,7 +12,7 @@ import core as node
 import json
 
 
-referenceUnit = -411
+referenceUnit = -100
 RELAY_PIN = 17  # GPIO17 (Pin 11)
 json_filename = 'config.json'
 cal_urine = 380
