@@ -55,7 +55,7 @@ def read_distance():
         pulse_end = time.time()
 
     duration = pulse_end - pulse_start
-    distance_cm = duration * 17150
+    distance_cm = 25 - (duration * 17150)
     return round(distance_cm, 2)
 
 # TEMPERATURE
