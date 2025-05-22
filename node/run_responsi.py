@@ -15,9 +15,9 @@ import json
 referenceUnit = -411
 RELAY_PIN = 17  # GPIO17 (Pin 11)
 json_filename = 'config.json'
-cal_urine = 203
-t1_urine = (1023 - cal_urine)//3
-t2_urine = (1023 - cal_urine) * 2 // 3
+cal_urine = 380
+t1_urine = ((1000 - cal_urine)// 3) + cal_urine
+t2_urine = ((1000 - cal_urine) * 2 // 3) + cal_urine
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(RELAY_PIN, GPIO.OUT)
 
